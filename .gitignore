@@ -1,0 +1,5 @@
+env/
+.vscode/
+app.db
+migrations/
+__pycache__
