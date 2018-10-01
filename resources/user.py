@@ -1,9 +1,10 @@
 from flask import request
 from flask_restful import Resource
+import flask_jwt_extended
 from Model import db, User,UserSchema
-import jwt
 
 user_schema = UserSchema()
+
 
 class Login(Resource):
     def post(self):
@@ -18,7 +19,8 @@ class Login(Resource):
         if user:
             result = user_schema.dump(user).data
             del result["password"]
-            result ["token"] = str(jwt.encode(result, 'secret', algorithm='HS256'))
+            token = flask_jwt_extended.create_access_token(identity=result)
+            result ["token"] = token
             return { "status": 'success', 'data': result }, 201
         else:
              return {'message': 'No user/password found'}, 400   
@@ -42,13 +44,13 @@ class Register(Resource):
             username=json_data['username'],
             password = json_data['password']
             )
-
-        db.session.add(user)
-        db.session.commit()
+        user.save()
 
         result = user_schema.dump(user).data
         del result["password"]
-        result ["token"] = str(jwt.encode(result, 'secret', algorithm='HS256'))
+        
+        token = flask_jwt_extended.create_access_token(identity=result)
+        result ["token"] = token
       
 
         return { "status": 'success', 'data': result }, 201

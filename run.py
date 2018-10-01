@@ -11,6 +11,8 @@ def create_app(config_filename):
     from Model import db
     db.init_app(app)
 
+    from flask_jwt_extended import JWTManager
+    JWTManager(app)
     return app
 
 
